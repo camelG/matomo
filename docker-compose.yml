@@ -1,0 +1,36 @@
+version: "3.7"
+
+services:
+  matomo:
+    image: matomo:latest
+    container_name: matomo
+    ports:
+      - "8080:80"
+    volumes:
+      - ./matomo:/var/www/html
+    environment:
+      - MATOMO_DATABASE_HOST=db
+      - MATOMO_DATABASE_ADAPTER=mysql
+      - MATOMO_DATABASE_TABLES_PREFIX=matomo_
+      - MATOMO_DATABASE_USERNAME=matomo
+      - MATOMO_DATABASE_PASSWORD=matomopassword
+      - MATOMO_DATABASE_DBNAME=matomo
+    depends_on:
+      - db
+
+  db:
+    image: mariadb:10.5
+    container_name: matomo-db
+    command: --max-allowed-packet=64MB --innodb-log-file-size=64MB
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: matomo
+      MYSQL_USER: matomo
+      MYSQL_PASSWORD: matomopassword
+    volumes:
+      - ./db:/var/lib/mysql
+
+volumes:
+  matomo:
+  db:
